@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 
+use App\Services\RajaOngkirService;
+
 class TransactionController extends BaseController
 {
     protected $cart;
@@ -84,5 +86,60 @@ public function cart_clear()
     );
 
     return redirect()->to(base_url('keranjang'));
+}
+
+public function checkout()
+{  
+    $data = [
+        'items' => $this->cart->contents(),
+        'total' => $this->cart->total() 
+    ];
+
+    return view('v_checkout', $data);
+}
+public function destinations()
+{
+    $search = $this->request->getGet('q'); 
+
+    $service = new RajaOngkirService();
+    $response = $service->getDestination($search);
+
+    $results = [];
+    $data = $response['data'] ?? [];
+
+    foreach ($data as $item) {
+        $results[] = [
+            'id'   => $item['id'],
+            'text' => $item['label']
+        ];
+    }
+
+    return $this->response->setJSON([
+        'results' => $results
+    ]);
+}   
+public function costs()
+{
+    $origin = '64999';
+    $destination = $this->request->getGet('destination');
+    $weight = '1000';
+    $courier = 'jne'; 
+
+    $service = new RajaOngkirService();
+    $response = $service->getCost($origin, $destination, $weight, $courier);
+
+    $results = [];
+    $data = $response['data'] ?? [];
+
+    foreach ($data as $item) {
+        $results[] = [
+            'service'     => $item['service'],
+            'description' => $item['description'],
+            'cost'        => $item['cost'],
+            'etd'         => $item['etd']
+        ];
+    }
+
+    return $this->response->setJSON($results);
 }
 }
