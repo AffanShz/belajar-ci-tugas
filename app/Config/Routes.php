@@ -31,6 +31,7 @@ $routes->group('keranjang', ['filter' => 'auth'], function ($routes) {
 $routes->get('checkout', 'TransactionController::checkout', ['filter' => 'auth']);
 $routes->get('transaction', 'TransactionController::index', ['filter' => 'auth']);
 $routes->get('profile', 'ProfileController::index', ['filter' => 'role'] );
+$routes->post('buy', 'TransactionController::buy', ['filter' => 'auth']);
 
 $routes->get('ajax/destinations','TransactionController::destinations', ['filter' => 'auth']);
 $routes->get('ajax/costs','TransactionController::costs', ['filter' => 'auth']);
